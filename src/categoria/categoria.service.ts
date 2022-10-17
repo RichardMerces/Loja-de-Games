@@ -7,14 +7,6 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriaService {
-<<<<<<< HEAD
- create(createCategoriaDto: CreateCategoriaDto) {
-    return 'This action adds a new categoria';
-  
-  }
-=======
->>>>>>> 11d2762fd0bd1e34989433c01d1d77ce4001b9ae
-
   constructor (
     @Inject("CATEGORIA_REPOSITORY")
     private categoriaRepository:Repository<Categoria>){}
