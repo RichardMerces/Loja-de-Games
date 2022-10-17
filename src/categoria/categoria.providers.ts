@@ -10,3 +10,5 @@ export const categoriaProviders = [
       inject: ['DATA_SOURCE'],
     },
   ];
+
+  // testando um commit
