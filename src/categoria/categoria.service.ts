@@ -1,20 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject } from '@nestjs/common/decorators';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
+import { Categoria } from './entities/categoria.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriaService {
 
   constructor (
-    @Injectable("CATEGORIA_REPOSITORY")
-    private categoriaRepository:Repository<categoria>){}
+    @Inject("CATEGORIA_REPOSITORY")
+    private categoriaRepository:Repository<Categoria>){}
     async Listar():Promise<Categoria[]>{
       return this.categoriaRepository.find();
     }
 
     private produtos: Categoria[]=[]
     create(createCategoriaDto: CreateCategoriaDto) {
-      const idMaxAtual = this.produtos[this.produtos.length -1]?. id || 0;
+      const idMaxAtual = this.produtos[this.produtos.length -1]?.id || 0;
       const id = idMaxAtual + 1;
       const categoria = {
         id,
