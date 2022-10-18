@@ -2,28 +2,28 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DeleteResult, ILike, Repository } from 'typeorm';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
-import { CreateProdutosDto } from './dto/create-categoria.dto';
-import { UpdateProdutosDto } from './dto/update-categoria.dto';
-import { produtos } from './entities/categoria.entity';
+import { CreateProdutoDto } from './dto/create-produto.dto';
+import { UpdateProdutoDto } from './dto/update-produto.dto';
+import { Produto } from './entities/produto.entity';
 
 @Injectable()
 export class ProdutosService {
 
   constructor(
     @Inject('PRODUTOS_REPOSITORY')
-    private produtosRepository: Repository<Produtos>
+    private produtosRepository: Repository<Produto>
   ) {}
 
-  async findAll(): Promise<Produtos[]> {
+  async findAll(): Promise<Produto[]> {
     return await this.produtosRepository.find();
   }
 
-  async findById(idProdutos: number): Promise<Produtos> {
+  async findById(id: number): Promise<Produto> {
 
     let produtos = await this.produtosRepository.findOne({
 
       where: {
-        idProdutos
+        id
       }
 
     });
@@ -37,7 +37,7 @@ export class ProdutosService {
     return produtos; 
   }
 
-  async findByName(nome: string): Promise<Produtos[]> {
+  async findByName(nome: string): Promise<Produto[]> {
 
     return await this.produtosRepository.find({
 
@@ -50,12 +50,12 @@ export class ProdutosService {
 
   }
 
-  async create(createProdutosDto: CreateProdutosDto): Promise<CreateProdutosDto> {
+  async create(createProdutosDto: CreateProdutoDto): Promise<CreateProdutoDto> {
     return this.produtosRepository.save(createProdutosDto);
   }
 
-  async update(id: number, updateProdutosDto: UpdateProdutosDto) {
-    return this.produtosRepository.update(id, updateProdutosDto);
+  async update(id: number, updateProdutoDto: UpdateProdutoDto) {
+    return this.produtosRepository.update(id, updateProdutoDto);
   }
 
   async delete(id: number): Promise<DeleteResult> {

@@ -7,11 +7,11 @@ export class Produto
     id: number
 
     @Column({length: 100})
-    name: string
+    nome: string
+    
+    @Column({length: 100})
+    type: string
 
     @Column({length: 100})
     price: number
-
-    @Column({length: 100})
-    type: string
 }
