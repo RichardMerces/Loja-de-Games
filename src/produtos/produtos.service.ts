@@ -43,7 +43,7 @@ export class ProdutosService {
 
       where:{
 
-        nome: ILike(%${nome}%)
+        nome: ILike(`%${nome}%`)
 
       }
     });
