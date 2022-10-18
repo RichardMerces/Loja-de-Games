@@ -4,7 +4,7 @@ import{Categoria} from './entities/categoria.entity';
 
 export const categoriaProviders = [
     {
-      provide: 'CATEGORIA_REPOSITORY',
+      provide: 'CATEGORIAS_REPOSITORY',
       useFactory: (dataSource: DataSource) => dataSource.
       getRepository(Categoria),
       inject: ['DATA_SOURCE'],
