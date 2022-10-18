@@ -1,54 +1,70 @@
-/* import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { DeleteResult, ILike, Repository } from 'typeorm';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
-import { create } from 'domain';
-import { ILike, Repository } from 'typeorm';
-import { CreateProdutoDto } from './dto/create-produto.dto';
-import { UpdateProdutoDto } from './dto/update-produto.dto';
-import { Produto } from './entities/produto.entity';
+import { CreateProdutosDto } from './dto/create-categoria.dto';
+import { UpdateProdutosDto } from './dto/update-categoria.dto';
+import { produtos } from './entities/categoria.entity';
 
 @Injectable()
 export class ProdutosService {
 
   constructor(
-    @Inject('PRODUTOS_REPOSITORY'){
-    private produtosRepository: Repository<Produto>
-    ){}
+    @Inject('PRODUTOS_REPOSITORY')
+    private produtosRepository: Repository<Produtos>
+  ) {}
 
-  
-  findAll(): Promise<Produto[]>{
+  async findAll(): Promise<Produtos[]> {
     return await this.produtosRepository.find();
   }
 
-  findById(idProduto: number): Promise<Produto>{
+  async findById(idProdutos: number): Promise<Produtos> {
 
-    let produto = await this.produtosRepository.findOne({
+    let produtos = await this.produtosRepository.findOne({
 
       where: {
-        idProduto
+        idProdutos
       }
 
     });
 
-    return produto;
+    if(!produtos) {
+
+      throw new HttpException('Produtos não encontrado!', HttpStatus.NOT_FOUND);
+
+    }
+
+    return produtos; 
   }
 
-  create(CreateProdutoDto: CreateProdutoDto): Promise<CreateProdutoDto> { 
-    return this.produtosRepository.save(CreateProdutoDto);
+  async findByName(nome: string): Promise<Produtos[]> {
+
+    return await this.produtosRepository.find({
+
+      where:{
+
+        nome: ILike(%${nome}%)
+
+      }
+    });
+
   }
 
-  update(id: number, UpdateProdutoDto: UpdateProdutoDto) {
-      return this.produtosRepository.update(id, UpdateProdutoDto);
-}
+  async create(createProdutosDto: CreateProdutosDto): Promise<CreateProdutosDto> {
+    return this.produtosRepository.save(createProdutosDto);
+  }
 
-  delete (id: number): Promise<DeleteResult> {
+  async update(id: number, updateProdutosDto: UpdateProdutosDto) {
+    return this.produtosRepository.update(id, updateProdutosDto);
+  }
 
-    let buscarProdutos = await this.findById(id);
-    
-    if (!buscarProutos) {
-    throw new HttpException('produtos não encontrado!', HttpStatus.NOT_FOUND)
+  async delete(id: number): Promise<DeleteResult> {
+
+    let buscaProdutos = await this.findById(id);
+
+    if (!buscaProdutos) {
+        throw new HttpException('predutos não encontrada!', HttpStatus.NOT_FOUND)
     }
     return await this.produtosRepository.delete(id);
   }
 }
- */
