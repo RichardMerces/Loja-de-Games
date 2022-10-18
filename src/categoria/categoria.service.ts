@@ -1,64 +1,70 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Inject } from '@nestjs/common/decorators';
+import { Injectable, Inject } from '@nestjs/common';
+import { DeleteResult, ILike, Repository } from 'typeorm';
+import { HttpStatus } from '@nestjs/common/enums';
+import { HttpException } from '@nestjs/common/exceptions';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { Categoria } from './entities/categoria.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
-export class CategoriaService {
-  constructor (
-    @Inject("CATEGORIA_REPOSITORY")
-    private categoriaRepository:Repository<Categoria>){}
-    async Listar():Promise<Categoria[]>{
-      return this.categoriaRepository.find();
+export class CategoriasService {
+
+  constructor(
+    @Inject('CATEGORIAS_REPOSITORY')
+    private categoriasRepository: Repository<Categoria>
+  ) {}
+
+  async findAll(): Promise<Categoria[]> {
+    return await this.categoriasRepository.find();
+  }
+
+  async findById(idCategoria: number): Promise<Categoria> {
+
+    let categoria = await this.categoriasRepository.findOne({
+
+      where: {
+        idCategoria
+      }
+
+    });
+
+    if(!categoria) {
+
+      throw new HttpException('Categoria não encontrado!', HttpStatus.NOT_FOUND);
+
     }
 
-    private produtos: Categoria[]=[]
-    create(createCategoriaDto: CreateCategoriaDto) {
-      const idMaxAtual = this.produtos[this.produtos.length -1]?.id || 0;
-      const id = idMaxAtual + 1;
-      const categoria = {
-        id,
-        ...createCategoriaDto
-      };
-      this.produtos.push(categoria)
-      return categoria;
-    }
+    return categoria; 
+  }
   
-    findAll() {
-      return this.produtos;
-    }
-  
-    findOne(id: number) {
-       const index = this.produtos.findIndex((categoria)=> categoria.id===id)
-        return this.produtos[index]
-       // return `This action returns a #${id} user`;
-      
-    
-    }
-  
-    update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
-      const produtos= this.findOne(id)
-      const newCategoria ={
-        ...produtos ,
-        ... updateCategoriaDto,
+  async findByName(nome: string): Promise<Categoria[]> {
+
+    return await this.categoriasRepository.find({
+
+      where:{
+
+        nome: ILike(`%${nome}%`)
+
       }
-        const index = this.produtos.findIndex((categoria) => categoria.id === id)
-        this.produtos[index] = newCategoria
-      
-      return newCategoria;
-    }
+    });
     
+  }
   
-    remove(id: number) {
-    const index = this.produtos.findIndex((categoria) => categoria.id === id)
-  
-    if (index === -1){
-      throw new NotFoundException(`Usuário com o id ${id} não encontrado`) // excecao quando algo não for encontrado  em http
-  
+  async create(createCategoriaDto: CreateCategoriaDto): Promise<CreateCategoriaDto> {
+    return this.categoriasRepository.save(createCategoriaDto);
+  }
+
+  async update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
+    return this.categoriasRepository.update(id, updateCategoriaDto);
+  }
+
+  async delete(id: number): Promise<DeleteResult> {
+
+    let buscaCategoria = await this.findById(id);
+
+    if (!buscaCategoria) {
+        throw new HttpException('Categoria não encontrada!', HttpStatus.NOT_FOUND)
     }
-    this.produtos.splice(index,1);
+    return await this.categoriasRepository.delete(id);
   }
-  
-  }
+}
